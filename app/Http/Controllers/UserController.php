@@ -43,6 +43,7 @@ class UserController extends Controller
     public function logout()
     {
         auth()->logout();
+        header("Access-Control-Allow-Origin: *");
         return response()->json(['messages' =>'Successfully logged out'], 200);
     }
 }
