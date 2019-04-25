@@ -13,7 +13,16 @@ class ArticleController extends Controller
 {
     public function all()
     {
-        return response()->json(Article::with('user')->paginate(6), 200);
+        $articles = Article::with('user')->paginate(6);
+        if(!$articles->isEmpty())
+        {
+            return response()->json($articles, 200);
+        }
+        else 
+        {
+            return response()->json(['messages' => ['There are no articles yet created']], 404);
+        }
+        
     }
 
     public function by_user()
@@ -22,8 +31,16 @@ class ArticleController extends Controller
         $articles = Article::whereHas('user', function($query){
             $user = JWTAuth::parseToken()->authenticate();
             $query->where('users.id', $user->id);
-        })->paginate(6);
-        return response()->json($articles, 200);
+        })->with('user')->paginate(6);
+        if(!$articles->isEmpty())
+        {
+            return response()->json($articles, 200);
+        }
+        else
+        {
+            return response()->json(['messages' => ['You dont have any articles yet']], 404);
+        }
+        
     }
 
     public function edit()
@@ -35,8 +52,9 @@ class ArticleController extends Controller
 
     public function store()
     {
-        $validator = Validator::make(request()->json()->all(), [
-            'title' => 'required|alpha_num',
+        $values = request()->only(['title', 'image', 'body']);
+        $validator = Validator::make($values, [
+            'title' => 'required',
             'image' => 'required',
             'body' => 'required'
         ]);
@@ -74,9 +92,10 @@ class ArticleController extends Controller
 
     public function update()
     {
-
-        $validator = Validator::make(request()->json()->all(), [
-            'title' => 'required|alpha_num'
+        $value = request()->only(['title', 'body']);
+        $validator = Validator::make($value, [
+            'title' => 'required',
+            'body' => 'required'
         ]);
 
         if($validator->fails())
@@ -92,7 +111,7 @@ class ArticleController extends Controller
         else 
         {
             $user = JWTAuth::parseToken()->authenticate();
-            $article = new Article();
+            $article = Article::find(request()->input('id'));
             $title = request()->input('title');
             $article->title = $title;
             $article->body = request()->input('body');
@@ -125,7 +144,7 @@ class ArticleController extends Controller
 
     public function show()
     {
-        $article = Article::find(request()->input('id'));
+        $article = Article::with('user')->find(request()->input('id'));
         if($article == null)
         {
             return response()->json(['message' => 'Article not found'], 404);

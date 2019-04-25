@@ -14,7 +14,9 @@ use Illuminate\Http\Request;
 */
 
 Route::post('user/login', 'UserController@login');
-
+Route::post('/image/upload', 'ArticleController@upload');
+Route::get('article/all', 'ArticleController@all');
+Route::get('article/show', 'ArticleController@show');
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::post('user/logout', 'UserController@logout');
@@ -24,12 +26,6 @@ Route::group(['middleware' => ['jwt.verify']], function() {
     Route::delete('article/delete', 'ArticleController@delete');
     Route::post('article/create', 'ArticleController@store');
     
+    
 });
 
-Route::group(['middleware' => ['cors']], function(){
-    Route::post('/image/upload', 'ArticleController@upload');
-});
-
-
-Route::get('article/all', 'ArticleController@all');
-Route::get('article/show', 'ArticleController@show');

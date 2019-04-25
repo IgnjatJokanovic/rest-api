@@ -26,15 +26,15 @@ class JwtMiddleware extends BaseMiddleware
         {
             if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException)
             {
-                return response()->json(['message' => 'Token is Invalid please login'], 401);
+                return response()->json(['messages' => ['Token is Invalid please login']], 401);
             }
             else if ($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException)
             {
-                return response()->json(['message' => 'Token is Expired please login'], 401);
+                return response()->json(['messages' => ['Session Expired please login']], 401);
             }
             else
             {
-                return response()->json(['message' => 'You must be logged in to see this page'], 401);
+                return response()->json(['messages' => ['You must be logged in to see this page']], 401);
             }
         }
         return $next($request);
