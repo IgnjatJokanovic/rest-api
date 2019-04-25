@@ -27,14 +27,13 @@ class UserController extends Controller
         else 
         {
             $token = auth()->attempt($credentials);
-            var_dump($token);
             if($token)
             {
-                return response()->json(['token' => $token], 200);
+                return response()->json(['token' => $token]);
             }
             else 
             {
-                return response()->json(['messages' =>'Invalid username or password'], 401);
+                return response()->json(['messages' => ['Invalid username or password']], 401);
             }
         }
 
@@ -43,7 +42,6 @@ class UserController extends Controller
     public function logout()
     {
         auth()->logout();
-        header("Access-Control-Allow-Origin: *");
         return response()->json(['messages' =>'Successfully logged out'], 200);
     }
 }
